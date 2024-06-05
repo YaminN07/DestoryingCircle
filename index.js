@@ -9,6 +9,7 @@ const scoreEl = document.querySelector('#scoreEl')
 const startGameBtn = document.querySelector('#startGameBtn')
 const modalEl = document.querySelector('#modalEl')
 const bigScoreEl = document.querySelector('#bigScoreEl')
+let audio = document.querySelector('#audio')
 
 const x = canvas.width / 2
 const y = canvas.height / 2
@@ -106,25 +107,31 @@ class Particle {
    }
 }
 
-class Lightsaber {
-    constructor(x, y, w, h, color){
-       this.x = x
-       this.y = y
-       this.w = w
-       this.h = h
-       this.color = color
+class shotGun {
+    constructor(x, y, radius, color, velocity){
+          this.x = x
+          this.y = y
+          this.radius = radius
+          this.color = color
+          this.velocity = velocity
     }
 
     draw() {
-        c.beginPath()
-        c.arc(x, y, 20, 0, 2 * Math.PI, false)
-        c.fillStyle = this.color
-        c.fill()
+       c.beginPath()
+       c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+       c.fillStyle = this.color
+       c.fill()
     }
+
+     update() { // The motion of the projectile
+        this.draw()
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+     }
 }
 
 let player = new Player(x, y, 10, 'white')
-let lightsaber = new Lightsaber(x, y, 150, 1000, 'orange')
+
 let projectiles = []
 let enemies = []
 let particles = []
@@ -133,8 +140,8 @@ console.log(Player)
 console.log(Lightsaber)
 
 function init() {
+   audio.play()
    player = new Player(x, y, 10, 'white')
-   lightsaber = new Lightsaber(x, y, 150, 1000, 'orange')
    projectiles = []
    enemies = []
    particles = []
@@ -216,6 +223,7 @@ function animate() {
       // end game
       if(dist - enemy.radius - player.radius < 1) {
          cancelAnimationFrame(animationId)
+         audio.currentTime = 0
          modalEl.style.display = 'flex'
          bigScoreEl.innerHTML = score
       }
